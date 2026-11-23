@@ -1,0 +1,27 @@
+opencost:
+  prometheus:
+    internal:
+      namespaceName: prometheus-system
+      serviceName: prometheus-server
+      port: 80
+  exporter:
+    defaultClusterId: finops-lab
+    replicas: 1
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "55Mi"
+      limits:
+        memory: "1Gi"
+  ui:
+    enabled: true
+  # Lab price: kind has no cloud price list. CPU per vCPU-hour, RAM per GiB-hour
+  # (https://opencost.io/docs/configuration/on-prem). 0.136986 x 730 h = $100 per vCPU per month,
+  # the rate of the guide's running example.
+  customPricing:
+    enabled: true
+    costModel:
+      description: Lab prices for the finops.how guide
+      CPU: 0.136986
+      RAM: 0.004237
+      storage: 0.00005479452

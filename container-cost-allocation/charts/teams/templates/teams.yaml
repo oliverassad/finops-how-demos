@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: checkout
+  labels: {team: checkout, env: lab, cost-center: cc-1200}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: checkout
+  labels: {team: checkout, app: checkout, env: lab, cost-center: cc-1200}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: checkout}
+  template:
+    metadata:
+      labels: {team: checkout, app: checkout, env: lab, cost-center: cc-1200}
+    spec:
+      containers:
+        - name: load
+          image: busybox:1.37.0
+          # Duty cycle: one busy core for 9s, then sleep 1s. Average use = 9/10 core, about half the request.
+          command: ["sh", "-c", "while true; do timeout 9 sh -c 'while :; do :; done'; sleep 1; done"]
+          resources:
+            requests: {cpu: 1800m, memory: 256Mi}
+            limits: {cpu: 1800m, memory: 256Mi}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: search
+  labels: {team: search, env: lab, cost-center: cc-1200}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search
+  namespace: search
+  labels: {team: search, app: search, env: lab, cost-center: cc-1200}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: search}
+  template:
+    metadata:
+      labels: {team: search, app: search, env: lab, cost-center: cc-1200}
+    spec:
+      containers:
+        - name: load
+          image: busybox:1.37.0
+          # Duty cycle: one busy core for 7s, then sleep 3s. Average use = 7/10 core, about half the request.
+          command: ["sh", "-c", "while true; do timeout 7 sh -c 'while :; do :; done'; sleep 3; done"]
+          resources:
+            requests: {cpu: 1400m, memory: 256Mi}
+            limits: {cpu: 1400m, memory: 256Mi}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: data
+  labels: {team: data, env: lab, cost-center: cc-1200}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data
+  namespace: data
+  labels: {team: data, app: data, env: lab, cost-center: cc-1200}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: data}
+  template:
+    metadata:
+      labels: {team: data, app: data, env: lab, cost-center: cc-1200}
+    spec:
+      containers:
+        - name: load
+          image: busybox:1.37.0
+          # Duty cycle: one busy core for 5s, then sleep 5s. Average use = 5/10 core, about half the request.
+          command: ["sh", "-c", "while true; do timeout 5 sh -c 'while :; do :; done'; sleep 5; done"]
+          resources:
+            requests: {cpu: 1000m, memory: 128Mi}
+            limits: {cpu: 1000m, memory: 128Mi}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+  labels: {team: platform, env: lab, cost-center: cc-1200}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform
+  namespace: platform
+  labels: {team: platform, app: platform, env: lab, cost-center: cc-1200}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: platform}
+  template:
+    metadata:
+      labels: {team: platform, app: platform, env: lab, cost-center: cc-1200}
+    spec:
+      containers:
+        - name: load
+          image: busybox:1.37.0
+          # Duty cycle: one busy core for 5s, then sleep 5s. Average use = 0.6 core (limit) x 5/10 = 0.3 core, about half the request.
+          command: ["sh", "-c", "while true; do timeout 5 sh -c 'while :; do :; done'; sleep 5; done"]
+          resources:
+            requests: {cpu: 600m, memory: 128Mi}
+            limits: {cpu: 600m, memory: 128Mi}
